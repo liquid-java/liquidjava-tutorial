@@ -9,18 +9,18 @@ import java.net.SocketAddress;
 @StateSet({"unconnected", "bound", "connected", "closed"})
 public interface SocketRefinements {
 	
-	@StateRefinement(to="unconnected(this)")
+	@StateRefinement(to="unconnected()")
 	public void Socket();
 	
-	@StateRefinement(from="unconnected(this)", to="bound(this)")
+	@StateRefinement(from="unconnected()", to="bound()")
 	public void bind(SocketAddress add);
 	
-	@StateRefinement(from="bound(this)", to="connected(this)")
+	@StateRefinement(from="bound()", to="connected()")
 	public void connect(SocketAddress add);
 	
-	@StateRefinement(from="connected(this)")
+	@StateRefinement(from="connected()")
 	public void sendUrgentData(int n);
 	
-	@StateRefinement(from="!closed(this)", to="closed(this)")
+	@StateRefinement(from="!closed()", to="closed()")
 	public void close();
 }

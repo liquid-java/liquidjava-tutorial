@@ -6,7 +6,7 @@ import liquidjava.specification.StateSet;
 @StateSet({"stopped", "playing", "paused"})
 public class MediaPlayer {
 
-    @StateRefinement(to="stopped(this)")
+    @StateRefinement(to="stopped()")
     public MediaPlayer() {}
 
     @StateRefinement(from="true", to="true")

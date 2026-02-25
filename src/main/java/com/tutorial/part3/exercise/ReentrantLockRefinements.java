@@ -8,7 +8,7 @@ import liquidjava.specification.StateSet;
 @StateSet({"unlocked", "locked"})
 public interface ReentrantLockRefinements {
 
-    @StateRefinement(to="unlocked(this)")
+    @StateRefinement(to="unlocked()")
     public void ReentrantLock();
 
     @StateRefinement(from="true", to="true")

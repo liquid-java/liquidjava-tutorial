@@ -6,13 +6,13 @@ import liquidjava.specification.StateSet;
 @StateSet({"on", "off"})
 public class LightBulb {
 
-    @StateRefinement(to="off(this)")
+    @StateRefinement(to="off()")
     public LightBulb() {}
 
-    @StateRefinement(from="off(this)", to="on(this)")
+    @StateRefinement(from="off()", to="on()")
     public void turnOn() {}
 
-    @StateRefinement(from="on(this)", to="off(this)")
+    @StateRefinement(from="on()", to="off()")
     public void turnOff() {}
 
     public static void main(String[] args) {

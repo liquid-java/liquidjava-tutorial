@@ -9,11 +9,11 @@ import liquidjava.specification.StateRefinement;
 @Ghost("int size")
 public interface ArrayListRefinements<E> {
 
-	@StateRefinement(to="size(this) == 0")
+	@StateRefinement(to="size() == 0")
 	public void ArrayList();
 
-	@StateRefinement(to="size(this) == size(old(this)) + 1")
+	@StateRefinement(to="size() == size(old(this)) + 1")
 	public boolean add(E elem);
 
-	public E get(@Refinement("0 <= _ && _ < size(this)") int index);
+	public E get(@Refinement("0 <= _ && _ < size()") int index);
 }

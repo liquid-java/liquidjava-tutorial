@@ -52,9 +52,8 @@ To follow along with this tutorial, make sure you have the following installed:
 
 - Visual Studio Code, for editing the code and using the LiquidJava extension
 - [Java Extension Pack by Red Hat](vscode:extension/redhat.java), which provides Java support in VS Code
-- [LiquidJava Extension](vscode:extension/AlcidesFonseca.liquid-java), which provides the LiquidJava typechecker with real-time error reporting and syntax highlighting for the refinements.
-
-> Don't forget to star [LiquidJava](https://github.com/liquid-java/liquidjava) and its [extension](https://github.com/liquid-java/vscode-liquidjava) on GitHub! ⭐
+- [LiquidJava Extension](vscode:extension/AlcidesFonseca.liquid-java), which  automatically runs the LiquidJava verification and reports errors in the editor.
+- Also don't forget to star [LiquidJava](https://github.com/liquid-java/liquidjava) and its [extension](https://github.com/liquid-java/vscode-liquidjava) on GitHub! ⭐
 
 ---
 
@@ -66,9 +65,9 @@ First of all, let's explore how basic refinements work in LiquidJava.
 
 > Open [RefinementsExample.java](./src/main/java/com/tutorial/part1/RefinementsExample.java)
 
-In the `main` method, you can find four variables, `positive`, `nonzero`, `percentage` and `direction`, with three of them containing comments with the refinements that should be used in each one. Notice that `_` can also be used as a placeholder for the variable name in the refinement expression, as shown in the refinement for the `percentage` variable.
+Here, you can find  four methods, each one with a single local variable. The first three variables contain comments with the refinements that should be used in each one. Notice that `_` can also be used as a placeholder for the variable name in the refinement expression, as shown in the refinement for the `percentage` variable.
 
-> Now, one by one, uncomment the `@Refinement` annotations and observe each error reported. Remember that only one can be shown at a time. Then, change each value to satisfy the corresponding refinement — change the value of `positive` to a positive integer, the value of `nonzero` to any non-zero integer, and the value of `percentage` to an integer between `0` and `100`.
+> Now, one by one, uncomment the `@Refinement` annotations and observe each error reported. Then, change each value to satisfy the corresponding refinement — change the value of `positive` to a positive integer, the value of `nonzero` to any non-zero integer, and the value of `percentage` to an integer between `0` and `100`.
 
 > Then, add the refinement for the `direction` variable, which should ensure its value is always either `-1` or `1` (you should use the `||` operator for this). After that, change its value to satisfy the refinement.
 
@@ -116,13 +115,17 @@ Let's explore how to use **state refinements** to specify and verify properties 
 
 > Open [LightBulb.java](./src/main/java/com/tutorial/part2/LightBulb.java).
 
-Here, we specify that this object can only be in two states: `on` or `off`. Then, in the constructor, we specify that the initial state is `off`, through the `@StateRefinement` annotation. This annotation allows us to specify in which state the object should be before the method is called (`from`), and in which state it will be after the method execution (`to`). In the constructor, since it's the first method to be called, we can only specify the `to` state.
+Here, we specify that, at any moment, this object can only be in two states: `on` or `off`. Then, in the constructor, we specify that the initial state is `off`, through the `@StateRefinement` annotation. This annotation allows us to specify in which state the object should be before the method is called (`from`), and in which state it will be after the method execution (`to`). In the constructor, since it's the first method to be called, we can only specify the `to` transition.
 
-This object has two methods, `turnOn` and `turnOff`. From the state refinements, we can see that the method `turnOn` can only be called when the object is in state `off` transiting to state `on`. Similarly, the method `turnOff` can only be called when the object is in state `on`, transiting to state `off`. This means that we cannot call the same method twice in a row, since it would violate the protocol established by the state refinements. The following DFA illustrates this:
+This object has two methods, `turnOn` and `turnOff`. From the state refinements, we can see that the method `turnOn` can only be called when the object is in state `off` transiting to state `on`. Similarly, the method `turnOff` can only be called when the object is in state `on`, transiting to state `off`. This means that we cannot call the same method twice in a row, since it would violate the protocol established by the state refinements. 
+
+Notice that `on` and `off` are instance methods. By default, they use the `this` receiver, so `on()`, `this.on()`, and `on(this)` are all equivalent.
+
+The following DFA illustrates this:
 
 ![Light Bulb DFA](./docs/images/light_bulb_dfa.png)
 
-> Uncomment line 22 to observe the error.
+> Uncomment **line 22** to observe the error.
 
 #### Exercise
 
@@ -136,10 +139,10 @@ If you get stuck, here are some **hints**:
 
 - Follow the diagram carefully
 - For each edge in the diagram, identify the method that causes that transition and the source and target states
-- If a method is allowed from multiple source states, use the `||` operator to combine them 
-- Don't forget the `(this)` after each state name, since states are always associated with an object instance
+- If a method is allowed from multiple source states, you can either use the `||` operator to combine them
+- Don't forget the parentheses after each state name, since there are functions
 
-With the correct implementation, LiquidJava will report an error in line 30, since we are trying to resume playback when the player is stopped.
+With the correct implementation, LiquidJava will report an error in **line 30**, since we are trying to resume playback when the player is stopped.
 
 ### 3. External Refinements
 
@@ -153,7 +156,7 @@ Here, we refine the `Socket` class through state refinements, with the possible 
 
 > Open [SocketExample.java](./src/main/java/com/tutorial/part3/SocketExample.java).
 
-Here, we see a simple usage of the `Socket` class. If you comment out the line 9 containing with the `bind` method call, LiquidJava will report an error in the `connect` method call, since it violates the state refinement specified for the `Socket` class! Notice that when using the `Socket` class, we don't need to deal with any refinement annotations, since they are already specified in the external refinement interface.
+Here, we see a simple usage of the `Socket` class. If you comment out the **line 9** containing with the `bind` method call, LiquidJava will report an error in the `connect` method call, since it violates the state refinement specified for the `Socket` class! Notice that when using the `Socket` class, we don't need to deal with any refinement annotations, since they are already specified in the external refinement interface.
 
 #### Exercise
 
@@ -165,25 +168,25 @@ We want to ensure that the `lock` method can only be called in the `unlocked` st
 
 ![ReentrantLock DFA](./docs/images/reentrant_lock_dfa.png)
 
-With the correct implementation, LiquidJava will report an error in line 10 of [ReentrantLockExample.java](./src/main/java/com/tutorial/part3/exercise/ReentrantLockExample.java), since we are trying to unlock a lock that is not locked.
+With the correct implementation, LiquidJava will report an error in **line 10** of [ReentrantLockExample.java](./src/main/java/com/tutorial/part3/exercise/ReentrantLockExample.java), since we are trying to unlock a lock that is not locked.
 
 ### 4. Ghost Variables
 
-Finally, LiquidJava also offers a way to model objects using **ghost variables** through the `@Ghost` annotation, which are used to track additional information about the program's state when states aren't enough. These can be, for instance, counters (integers) or flags (booleans), to model more complex protocols.
+Finally, LiquidJava also offers a way to model objects using **ghost variables** through the `@Ghost` annotation, which are used to track additional information about the program's state when typestates aren't enough. These can be, for instance, counters (integers) or flags (booleans), to model more complex protocols.
 
 > Open [ArrayListRefinements.java](./src/main/java/com/tutorial/part4/ArrayListRefinements.java).
 
-Here, we define the refinements for the `ArrayList` class, using a ghost variable `size` to keep track of the number of elements in the list. Using the `size` ghost variable in state refinements, we can prevent out-of-bounds access.
+Here, we define the refinements for the `java.util.ArrayList` class, using a ghost variable `size` to keep track of the number of elements in the list, to prevent out-of-bounds access.
 
-In the constructor, we specify that after it is called, the ghost variable `size` will be equal to `0`. This is optional since its default value is already zero, but it helps us understand this example. Then, in the `add` method, we specify that it can be called in any state (since we don't specify a `from` state), and that after it is called, the `size` ghost variable will be incremented by one — the new size will be equal to the old size plus one (`old` is a special keyword that refers to the previous state of the object, so calling `size(old(this))` gets the value of `size` before the method was called). Finally, in the `get` method, we specify that the index parameter must be non-negative and less than the current size of the list, therefore preventing out-of-bounds errors.
+In the constructor, we specify that after it is called, the ghost variable `size` will be equal to `0`. This is optional since the default value for integers is already zero. Then, in the `add` method, we specify that it can be called in any state (since we don't specify a `from` state), and that after it is called, the `size` ghost variable will be incremented by one — the new size will be equal to the old size plus one (`old(this)` is a special function that refers to the previous state of the object, so calling `size(old(this))` gets the value of `size` before the method was called). Finally, in the `get` method, we specify that the index parameter must be between 0 and the size of the list, therefore preventing out-of-bounds errors.
 
 > Open [ArrayListExample.java](./src/main/java/com/tutorial/part4/ArrayListExample.java).
 
-Here, we can see a simple usage of the refined `ArrayList` class. If you uncomment line 11, LiquidJava will report an error, since we are trying to access an index that is out of bounds!
+Here, we can see a simple usage of the `ArrayList` class. If you uncomment **line 11**, LiquidJava will report an error, since we are trying to access an index that is out of bounds!
 
 #### Exercise
 
-Let's do the same but for the `Stack` class.
+Let's do the same but for the `java.util.Stack` class.
 
 > Open [StackRefinements.java](./src/main/java/com/tutorial/part4/exercise/StackRefinements.java). Your task is to refine the `Stack` class by replacing the `"true"` refinements with the appropriate ones to ensure the correct behavior of the `push`, `pop` and `peek` methods, using the `count` ghost variable to keep track of the number of elements in the stack, and not allow incorrect uses of these methods — popping or peeking from an empty stack.
 
@@ -191,17 +194,16 @@ If you get stuck, here are some **hints**:
 
 - You may find it useful to look at the previous example for reference
 - The predicates must be boolean expressions
-- You should use the `old` keyword to refer to the previous state of the object
+- You should use the `old(this)` function to refer to the previous state of the object
 - You should use the `count` ghost variable in all refinements
 
-With the correct implementation, LiquidJava will report an error in line 11 of [StackExample.java](./src/main/java/com/tutorial/part4/exercise/StackExample.java), since we are trying to pop an element of the stack when it is empty.
+With the correct implementation, LiquidJava will report an error in **line 11** of [StackExample.java](./src/main/java/com/tutorial/part4/exercise/StackExample.java), since we are trying to pop an element of the stack when it is empty.
 
 ---
 
 ## Quiz
 
 Test your knowledge about LiquidJava by taking a simple quiz available [here](https://liquid-java.github.io/liquidjava-tutorial/). Think you can get a perfect score?
-
 
 If you encounter any problems or have any questions, feel free to send an email to:
 
